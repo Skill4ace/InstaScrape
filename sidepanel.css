@@ -81,12 +81,14 @@ button {
 
 .controls,
 .status,
+.diagnostics,
 .panel {
   padding: 16px;
 }
 
 .controls,
 .status,
+.diagnostics,
 .summary-grid,
 .list-stack {
   margin-top: 14px;
@@ -188,6 +190,19 @@ button:disabled {
   font-size: 13px;
   line-height: 1.55;
   color: var(--muted);
+}
+
+.diagnostic-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.diagnostic-value {
+  margin: 6px 0 0;
+  font-size: 15px;
+  font-weight: 700;
+  word-break: break-word;
 }
 
 .summary-grid {

@@ -3,6 +3,11 @@ const DEFAULT_STATE = Object.freeze({
   status: "idle",
   profileUsername: "",
   currentList: "",
+  strategy: "",
+  phase: "",
+  pagesFetched: 0,
+  stopReason: "",
+  lastSeenUsername: "",
   note: "Open an Instagram profile and start an analysis.",
   startedAt: null,
   finishedAt: null,
@@ -15,6 +20,13 @@ const DEFAULT_STATE = Object.freeze({
     followers: 0,
     following: 0,
     notFollowingBack: 0
+  },
+  partialCounts: {
+    followers: 0,
+    following: 0,
+    notFollowingBack: 0,
+    scrollPasses: 0,
+    requestEvents: 0
   },
   error: ""
 });
@@ -47,8 +59,8 @@ async function handleMessage(message, sender) {
     case "GET_ANALYSIS_STATE":
       return { state: await getState() };
     case "RESET_ANALYSIS":
-      await saveState(DEFAULT_STATE);
-      return { state: DEFAULT_STATE };
+    await saveState(DEFAULT_STATE);
+    return { state: DEFAULT_STATE };
     case "START_ANALYSIS":
       return { state: await startAnalysis() };
     case "SCRAPE_PROGRESS":
@@ -65,6 +77,12 @@ async function handleMessage(message, sender) {
       return { state: await getState() };
     case "SCRAPE_ERROR":
       await mergeState({
+        strategy: message.strategy || "",
+        phase: message.phase || "error",
+        pagesFetched: message.pagesFetched || 0,
+        stopReason: message.stopReason || message.error || "",
+        lastSeenUsername: message.lastSeenUsername || "",
+        partialCounts: message.partialCounts || {},
         status: "error",
         error: message.error || "Unknown scraping error.",
         note: message.note || "Instagram blocked the scrape or the page layout changed.",
@@ -184,6 +202,10 @@ async function mergeState(patch) {
     counts: {
       ...current.counts,
       ...(patch.counts || {})
+    },
+    partialCounts: {
+      ...current.partialCounts,
+      ...(patch.partialCounts || {})
     }
   };
   await saveState(nextState);

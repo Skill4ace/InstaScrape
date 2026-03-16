@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "InstaScrape Follower Diff",
   "description": "Analyze Instagram followers and following from the current profile tab and list who is not following back.",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "minimum_chrome_version": "114",
   "icons": {
     "16": "icons/icon16.png",
@@ -19,6 +19,16 @@
   ],
   "host_permissions": [
     "https://www.instagram.com/*"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "page-bridge.js"
+      ],
+      "matches": [
+        "https://www.instagram.com/*"
+      ]
+    }
   ],
   "background": {
     "service_worker": "service-worker.js"
