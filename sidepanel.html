@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>InstaScrape</title>
+    <link rel="stylesheet" href="sidepanel.css">
+  </head>
+  <body>
+    <div class="shell">
+      <header class="hero">
+        <p class="eyebrow">Instagram Profile Analyzer</p>
+        <h1>Follower gap check</h1>
+        <p class="hero-copy">
+          Runs against the active Instagram profile tab, logs raw followers and following, and calculates who is not following back.
+        </p>
+      </header>
+
+      <section class="controls card">
+        <div>
+          <p class="label">Run target</p>
+          <p id="profileLabel" class="value">No profile selected</p>
+        </div>
+        <div class="button-row">
+          <button id="startButton" class="primary">Analyze Current Profile</button>
+          <button id="resetButton" class="secondary">Clear</button>
+        </div>
+      </section>
+
+      <section class="status card">
+        <div class="status-row">
+          <span id="statusBadge" class="badge idle">Idle</span>
+          <span id="updatedLabel" class="muted">No run yet</span>
+        </div>
+        <p id="note" class="note">Open an Instagram profile root page and keep that tab active while the scrape runs.</p>
+      </section>
+
+      <section class="summary-grid">
+        <article class="metric card">
+          <p class="label">Followers</p>
+          <p id="followersCount" class="metric-value">0</p>
+        </article>
+        <article class="metric card">
+          <p class="label">Following</p>
+          <p id="followingCount" class="metric-value">0</p>
+        </article>
+        <article class="metric card accent">
+          <p class="label">Not Following Back</p>
+          <p id="diffCount" class="metric-value">0</p>
+        </article>
+      </section>
+
+      <section class="list-stack">
+        <article class="card panel">
+          <div class="panel-head">
+            <div>
+              <p class="label">Followers Log</p>
+              <p class="muted" id="followersMeta">0 usernames</p>
+            </div>
+            <button class="ghost" data-copy-target="followers">Copy</button>
+          </div>
+          <pre id="followersList" class="log empty">Followers will appear here.</pre>
+        </article>
+
+        <article class="card panel">
+          <div class="panel-head">
+            <div>
+              <p class="label">Following Log</p>
+              <p class="muted" id="followingMeta">0 usernames</p>
+            </div>
+            <button class="ghost" data-copy-target="following">Copy</button>
+          </div>
+          <pre id="followingList" class="log empty">Following will appear here.</pre>
+        </article>
+
+        <article class="card panel accent-panel">
+          <div class="panel-head">
+            <div>
+              <p class="label">Not Following Back</p>
+              <p class="muted" id="diffMeta">0 usernames</p>
+            </div>
+            <button class="ghost" data-copy-target="notFollowingBack">Copy</button>
+          </div>
+          <pre id="diffList" class="log empty">The comparison result will appear here.</pre>
+        </article>
+      </section>
+    </div>
+
+    <script src="sidepanel.js"></script>
+  </body>
+</html>
