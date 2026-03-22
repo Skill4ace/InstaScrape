@@ -202,9 +202,14 @@
       const requestResult = await runRequestFirstCollection(dialog, collector, profileUsername, knownFollowers);
 
       if (!requestResult.completed) {
-        collector.strategy = "ui-hard-scroll";
+        const verificationFallback = collector.pagesFetched > 0;
+        if (!verificationFallback) {
+          collector.strategy = "ui-hard-scroll";
+        }
         collector.phase = "fallback-scrolling";
-        collector.stopReason = requestResult.reason || "Request capture stalled; falling back to UI hard scroll.";
+        collector.stopReason = verificationFallback
+          ? `Request capture stalled after ${collector.pagesFetched} pages; running up to 4 UI verification passes.`
+          : requestResult.reason || "Request capture stalled; falling back to UI hard scroll.";
         await emitCollectorProgress(
           profileUsername,
           relationship,
@@ -213,7 +218,13 @@
           collector.stopReason,
           true
         );
-        await runFallbackScrollCollection(dialog, collector, profileUsername, knownFollowers);
+        await runFallbackScrollCollection(
+          dialog,
+          collector,
+          profileUsername,
+          knownFollowers,
+          verificationFallback ? 4 : 120
+        );
       }
 
       if (!collector.stopReason) {
@@ -363,10 +374,10 @@
     return { completed: collector.hasNextPage === false };
   }
 
-  async function runFallbackScrollCollection(dialog, collector, profileUsername, knownFollowers) {
+  async function runFallbackScrollCollection(dialog, collector, profileUsername, knownFollowers, maxPasses) {
     let stableBottomPasses = 0;
 
-    for (let pass = 1; pass <= 120; pass += 1) {
+    for (let pass = 1; pass <= maxPasses; pass += 1) {
       const context = resolveModalContext(dialog);
       addEntriesToCollector(collector, context.entries);
       const beforeCount = collectorUserCount(collector);
@@ -402,12 +413,18 @@
       }
 
       if (stableBottomPasses >= 3) {
-        collector.stopReason = "UI fallback reached a stable bottom with no new users.";
+        collector.stopReason =
+          collector.strategy === "request-first"
+            ? `Request-first completed after ${collector.scrollPasses} UI verification passes.`
+            : "UI fallback reached a stable bottom with no new users.";
         return;
       }
     }
 
-    collector.stopReason = "UI fallback hit the scroll pass limit.";
+    collector.stopReason =
+      collector.strategy === "request-first"
+        ? `Request-first hit the ${maxPasses}-pass UI verification cap.`
+        : "UI fallback hit the scroll pass limit.";
   }
 
   function createCollector(relationship) {
